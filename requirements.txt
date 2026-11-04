@@ -1,0 +1,8 @@
+duckdb==2.0.0
+pandas
+fastapi
+uvicorn[standard]
+anthropic
+rapidfuzz
+pyyaml
+groq

@@ -1,0 +1,7 @@
+.env
+logs/
+__pycache__/
+*.pyc
+.vscode/
+uzex_spot_data/
+tests/last_eval.json

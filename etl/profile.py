@@ -1,0 +1,27 @@
+import duckdb, sys
+con = duckdb.connect()
+D='uzex_spot_data/'
+con.execute(f"create view deals as select * from read_csv('{D}deals_20*.csv', header=true, all_varchar=true, union_by_name=true)")
+con.execute(f"create view contracts as select * from read_csv('{D}contracts.csv', header=true, all_varchar=true)")
+con.execute(f"create view participants as select * from read_csv('{D}participants.csv', header=true, all_varchar=true)")
+def q(s):
+    print('>>',s); print(con.execute(s).fetchdf().to_string()); print()
+q("select count(*), count(distinct \"Номер сделки\") from deals")
+for c in ['Тип торгов','Регион','Тип контракта','Форма контракта','Состояние сделки','Единица измерения','Лот']:
+    q(f'select "{c}", count(*) n from deals group by 1 order by 2 desc limit 40')
+q('select count(*) from deals d left join contracts c using("Номер контракта") where c."Наименование продукта" is null')
+q('select count(*) from deals d left join participants p on d."ИНН продавца"=p."ИНН" where p."ИНН" is null')
+q('select count(*) from deals d left join participants p on d."ИНН покупателя"=p."ИНН" where p."ИНН" is null')
+q('select count(*), count(distinct "ИНН") from participants')
+q('select "Роль",count(*) from participants group by 1')
+q('select "Регион",count(*) from contracts group by 1 order by 2 desc')
+q('select "Валюта","Тип контракта",count(*) from contracts group by 1,2')
+q('select count(distinct "Наименование товара") from deals')
+q('select count(distinct "Наименование продукта") from contracts')
+q('select "Наименование продукта",count(*) n from contracts group by 1 order by 2 desc limit 60')
+q('select "Группа товара","Категория товара","Отрасль промышленности",count(*) from contracts group by 1,2,3 order by 4 desc limit 40')
+q('select count(*) from deals d join contracts c using("Номер контракта") where d."Лот"<>c."Лот" or d."Единица измерения"<>c."Единица измерения"')
+q('select min(try_cast("Количество" as double)), count(*) filter (where try_cast(replace("Сумма сделки",\' \',\'\') as double) is null) from deals')
+q("select count(*) from deals where \"Сумма сделки\" like '%'||chr(160)||'%'")
+q('select "Дата сделки" from deals where try_strptime("Дата сделки",\'%d.%m.%Y\') is null limit 5')
+q('select "Вид деятельности",count(*) from participants group by 1 order by 2 desc')
