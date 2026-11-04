@@ -18,8 +18,8 @@ python -X utf8 -I tests/make_golden.py     # builds tests/golden.yaml from panda
 python -X utf8 tests/run_eval.py           # runs the agent on the golden set (needs API key)
 ```
 
-## Deploy (public URL, no login)
-`Dockerfile` builds the DB at image build time. On Render / Fly.io / Railway / any VPS: build from the repo root (the `uzex_spot_data/` folder must be in the build context), set env `ANTHROPIC_API_KEY`, expose `$PORT`. Health check: `GET /health`. Run the Telegram bot as a second process (`python -m app.telegram_bot`) with `TELEGRAM_BOT_TOKEN`.
+## Deploy (Render)
+Blueprint `render.yaml` + `Dockerfile` (prebuilt `data/uzex.duckdb` is in the repo). Set secret `GROQ_API_KEY` on Render. Health check: `GET /health`.
 
 ## Layout
 `etl/` build DB · `agent/` prompt, tools, entity resolver, verifier · `app/` FastAPI + UI + Telegram · `tests/` golden set · `data/aliases.yaml` RU/UZ/EN aliases.

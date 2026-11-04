@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: nummus-ai
+    runtime: docker
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: GROQ_API_KEY
+        sync: false
+      - key: NUMMUS_TPM
+        value: "200000"
+      - key: NUMMUS_POOL
+        value: single
+      - key: NUMMUS_PROMPT
+        value: full
